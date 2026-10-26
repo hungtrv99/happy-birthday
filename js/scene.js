@@ -33,7 +33,7 @@ export class BirthdayScene {
     this.tiltX = 0;
     this.ready = false;
     this.revealT = 0;
-    this.cakeScale = 1.07;
+    this.cakeScale = 0.6955;
     this.punch = 1;
     this.idleSpin = 0.03;
     this.ageLabel = null;
@@ -85,7 +85,7 @@ export class BirthdayScene {
     this.camBaseY = this.mobile ? 2.95 : 2.35;
     this.camBaseZ = this.mobile ? 9.2 : 6.2;
     this.lookY = this.mobile ? 0.12 : 0.28;
-    this.cakeScale = this.mobile ? 0.6955 : 1.07;
+    this.cakeScale = 0.6955;
   }
 
   cream(color, extra = {}) {
@@ -717,18 +717,18 @@ export class BirthdayScene {
     const lit = this.candlesLit && !this.blown;
     this.darkT += ((lit ? 1 : 0) - this.darkT) * Math.min(1, dt * 2.8);
     const d = this.darkT;
-    this.hemi.intensity = 1.22 * (1 - d) + 0.42 * d;
+    this.hemi.intensity = 1.22 * (1 - d) + 0.5 * d;
     this.hemi.color.setRGB(1, 0.965, 0.976).lerp(new THREE.Color(0xffd4a0), d);
     this.hemi.groundColor.set(0xf7b8c6).lerp(new THREE.Color(0x4a2a18), d);
-    this.key.intensity = 1.02 * (1 - d) + 0.36 * d;
-    this.fill.intensity = 0.58 * (1 - d) + 0.22 * d;
-    this.lift.intensity = 0.38 * (1 - d) + 0.4 * d;
+    this.key.intensity = 1.02 * (1 - d) + 0.28 * d;
+    this.fill.intensity = 0.58 * (1 - d) + 0.18 * d;
+    this.lift.intensity = 0.38 * (1 - d) + 0.16 * d;
     this._skyNow.copy(this._skyDay).lerp(this._skyNight, d);
     this.renderer.setClearColor(this._skyNow, 1);
     this.scene.fog.color.copy(this._skyNow);
     this.scene.fog.near = 14 - d * 4;
     this.scene.fog.far = 42 - d * 12;
-    this.renderer.toneMappingExposure = 1.17 - d * 0.06;
+    this.renderer.toneMappingExposure = 1.17 - d * 0.16;
 
     const flicker = 0.88 + Math.sin(t * 11) * 0.12 + Math.sin(t * 17) * 0.08;
     if (this.cake) {
@@ -736,15 +736,18 @@ export class BirthdayScene {
       this.candleLight.position.set(this._lightPos.x, this._lightPos.y + 1.28, this._lightPos.z + 0.08);
       this.candleFill.position.set(this._lightPos.x, this._lightPos.y + 1.08, this._lightPos.z + 0.55);
     }
-    this.candleLight.color.set(d > 0.3 ? 0xffe08a : 0xffc4d4);
-    this.candleLight.intensity = lit ? 4.4 * flicker : 0.78 + Math.sin(t * 11) * 0.08;
-    this.candleLight.distance = lit ? 8.5 : 8;
-    this.candleLight.decay = lit ? 1.15 : 2;
+    this.candleLight.color.set(d > 0.3 ? 0xffd078 : 0xffc4d4);
+    this.candleLight.intensity = lit ? 1.85 * flicker : 0.78 + Math.sin(t * 11) * 0.08;
+    this.candleLight.distance = lit ? 6.2 : 8;
+    this.candleLight.decay = lit ? 1.55 : 2;
     this.candleFill.color.set(0xffc878);
-    this.candleFill.intensity = lit ? 2.6 * flicker : 0;
-    this.candleFill.distance = lit ? 6.5 : 4.5;
-    this.candleFill.decay = 1.1;
-    if (this.bloom) this.bloom.strength = lit ? 0.2 : 0.03;
+    this.candleFill.intensity = lit ? 0.85 * flicker : 0;
+    this.candleFill.distance = lit ? 4.6 : 4.5;
+    this.candleFill.decay = 1.35;
+    if (this.bloom) {
+      this.bloom.strength = lit ? 0.05 : 0.03;
+      this.bloom.threshold = lit ? 0.99 : 0.98;
+    }
 
     if (this.candleGroup?.visible) {
       if (this._candlePop == null) this._candlePop = 1;

@@ -76,7 +76,7 @@ body.is-dragging {
 
 body.is-candlelit .vignette {
   background:
-    radial-gradient(ellipse at 50% 48%, rgba(255, 200, 110, 0.2) 0%, transparent 42%, rgba(28, 14, 8, 0.38) 100%),
+    radial-gradient(ellipse at 50% 48%, rgba(255, 200, 110, 0.1) 0%, transparent 38%, rgba(28, 14, 8, 0.42) 100%),
     linear-gradient(to top, rgba(20, 10, 6, 0.22), transparent 42%);
 }
 
@@ -86,7 +86,7 @@ body.is-candlelit .vignette {
 }
 
 body.is-candlelit .glow {
-  background: radial-gradient(circle at 50% 46%, rgba(255, 210, 120, 0.32), transparent 42%);
+  background: radial-gradient(circle at 50% 46%, rgba(255, 210, 120, 0.12), transparent 36%);
 }
 
 .story {
