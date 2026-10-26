@@ -85,6 +85,7 @@ export class BirthdayScene {
     this.camBaseY = this.mobile ? 2.95 : 2.35;
     this.camBaseZ = this.mobile ? 9.2 : 6.2;
     this.lookY = this.mobile ? 0.12 : 0.28;
+    this.cakeScale = this.mobile ? 0.6955 : 1.07;
   }
 
   cream(color, extra = {}) {
