@@ -1,26 +1,34 @@
 export class BirthdaySong {
-  constructor(audio) {
-    this.audio = audio;
-    this.audio.loop = true;
-    this.playing = false;
+  constructor(bg, wish) {
+    this.bg = bg;
+    this.wish = wish;
+    this.bg.loop = true;
+    this.wish.loop = true;
   }
 
-  async play() {
-    if (this.playing) return;
+  async startBg() {
+    this.wish.pause();
+    this.wish.currentTime = 0;
+    this.bg.loop = true;
     try {
-      this.audio.currentTime = 0;
-      await this.audio.play();
-      this.playing = true;
+      if (this.bg.paused) await this.bg.play();
     } catch {
-      this.audio.src = "https://programmergaurav.github.io/happy-birthday/music.mp3";
-      this.audio.currentTime = 0;
-      await this.audio.play();
-      this.playing = true;
+      this.bg.src = "https://programmergaurav.github.io/happy-birthday/music.mp3";
+      this.bg.loop = true;
+      await this.bg.play();
     }
   }
 
-  stop() {
-    this.audio.pause();
-    this.playing = false;
+  async playWish() {
+    this.bg.pause();
+    this.wish.loop = true;
+    this.wish.currentTime = 0;
+    await this.wish.play();
+  }
+
+  resumeBg() {
+    this.wish.pause();
+    this.wish.currentTime = 0;
+    this.startBg().catch(() => {});
   }
 }

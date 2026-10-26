@@ -40,19 +40,34 @@
     </main>
 
     <p class="hint is-start" id="hint">Chạm để bắt đầu</p>
-    <p class="guide" id="guide" hidden>Kéo để xoay bánh · Chạm confetti</p>
+    <p class="guide" id="guide" hidden>
+      Kéo để xoay bánh · Chạm confetti<br />
+      Bấm
+      <span class="guide-btn" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2.8c1.7 2.2 2.5 3.7 2.5 5.4 0 1.4-1.1 2.6-2.5 2.6S9.5 9.6 9.5 8.2c0-1.7.8-3.2 2.5-5.4z" />
+          <path d="M10.2 11.4h3.6v8.1c0 .7-.5 1.2-1.2 1.2h-1.2c-.7 0-1.2-.5-1.2-1.2z" />
+        </svg>
+      </span>
+      để đốt và thổi nến
+    </p>
 
-    <button class="sound" id="sound" type="button" aria-label="Bật nhạc" hidden>
-      <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 9v6h4l5 5V4L8 9H4zm12.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4z" />
-        <path d="M19 5L5 19" />
-      </svg>
-      <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 9v6h4l5 5V4L8 9H4zm12.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-.9 7-4.5 7-8.8s-3-7.9-7-8.8z" />
-      </svg>
-    </button>
+    <div class="dock">
+      <button class="wish" id="wish" type="button" hidden aria-label="Đốt nến">
+        <svg class="icon-light" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.8c1.7 2.2 2.5 3.7 2.5 5.4 0 1.4-1.1 2.6-2.5 2.6S9.5 9.6 9.5 8.2c0-1.7.8-3.2 2.5-5.4z" />
+          <path d="M10.2 11.4h3.6v8.1c0 .7-.5 1.2-1.2 1.2h-1.2c-.7 0-1.2-.5-1.2-1.2z" />
+        </svg>
+        <svg class="icon-blow" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 9.5h10.2a2.4 2.4 0 1 0-2.4-2.4" />
+          <path d="M4 12.2h8" />
+          <path d="M4 14.8h12.2a2.4 2.4 0 1 1-2.4 2.4" />
+        </svg>
+      </button>
+    </div>
 
     <audio id="song" src="music/music.mp3" loop preload="auto"></audio>
+    <audio id="birthday" src="music/happy_birthday.mp3" preload="auto"></audio>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

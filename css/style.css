@@ -21,6 +21,11 @@ body {
   touch-action: none;
   user-select: none;
   cursor: grab;
+  transition: background 0.8s ease;
+}
+
+body.is-candlelit {
+  background: #2c1a12;
 }
 
 html:has(body.is-dragging),
@@ -49,6 +54,12 @@ body.is-dragging {
   pointer-events: none;
 }
 
+.dock,
+.wish,
+.sound {
+  pointer-events: auto;
+}
+
 .vignette,
 .glow {
   position: fixed;
@@ -60,10 +71,22 @@ body.is-dragging {
   background:
     radial-gradient(ellipse at center, transparent 52%, rgba(255, 150, 176, 0.2) 100%),
     linear-gradient(to top, rgba(255, 168, 188, 0.18), transparent 38%);
+  transition: background 0.8s ease, opacity 0.8s ease;
+}
+
+body.is-candlelit .vignette {
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(255, 200, 110, 0.2) 0%, transparent 42%, rgba(28, 14, 8, 0.38) 100%),
+    linear-gradient(to top, rgba(20, 10, 6, 0.22), transparent 42%);
 }
 
 .glow {
-  background: radial-gradient(circle at 50% 58%, rgba(255, 236, 242, 0.28), transparent 44%);
+  background: radial-gradient(circle at 50% 18%, rgba(255, 236, 242, 0.18), transparent 40%);
+  transition: background 0.8s ease, opacity 0.8s ease;
+}
+
+body.is-candlelit .glow {
+  background: radial-gradient(circle at 50% 46%, rgba(255, 210, 120, 0.32), transparent 42%);
 }
 
 .story {
@@ -167,6 +190,7 @@ body.is-dragging {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #e05670;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
 }
 
 .name {
@@ -176,16 +200,30 @@ body.is-dragging {
   line-height: 1.1;
   color: #ee7a96;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 24px rgba(201, 120, 132, 0.22);
+  transition: opacity 0.7s ease, visibility 0.7s ease;
 }
 
 .date-mark {
   margin-top: auto;
-  margin-bottom: 5.5vh;
+  margin-bottom: 8.5vh;
   font-family: "Cormorant Garamond", serif;
   font-weight: 600;
   font-size: clamp(2.8rem, 8.5vw, 4.6rem);
   letter-spacing: 0.22em;
   color: #e05670;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+
+body.is-candlelit .title,
+body.is-candlelit .name,
+body.is-candlelit .date-mark,
+body.is-candlelit .guide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+body.is-candlelit .stage {
+  background: transparent;
 }
 
 .hint {
@@ -229,11 +267,11 @@ body.is-dragging {
   bottom: 18px;
   z-index: 4;
   margin: 0;
-  max-width: min(52vw, 16rem);
+  max-width: min(58vw, 18rem);
   font-family: "Cormorant Garamond", serif;
   font-style: italic;
   font-size: clamp(0.78rem, 2.1vw, 0.95rem);
-  line-height: 1.35;
+  line-height: 1.45;
   letter-spacing: 0.03em;
   color: #d36a7e;
   opacity: 0;
@@ -244,17 +282,51 @@ body.is-dragging {
   opacity: 0.82;
 }
 
-.sound[hidden] {
-  display: none;
+.guide-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 1.35em;
+  height: 1.35em;
+  margin: 0 0.2em;
+  vertical-align: -0.28em;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 4px 10px rgba(255, 120, 150, 0.18);
 }
 
-.sound {
+.guide-btn svg {
+  width: 0.72em;
+  height: 0.72em;
+  fill: none;
+  stroke: #ee7a96;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dock {
   position: fixed;
   right: 18px;
   bottom: 18px;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.wish[hidden],
+.sound[hidden] {
+  display: none;
+}
+
+.wish,
+.sound {
   width: 52px;
   height: 52px;
+  margin: 0;
+  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.72);
@@ -264,14 +336,15 @@ body.is-dragging {
   display: grid;
   place-items: center;
   box-shadow: 0 10px 24px rgba(255, 120, 150, 0.22);
-  pointer-events: auto;
   touch-action: manipulation;
 }
 
+.wish:hover,
 .sound:hover {
   background: #fff;
 }
 
+.wish svg,
 .sound svg {
   width: 22px;
   height: 22px;
@@ -282,6 +355,8 @@ body.is-dragging {
   stroke-linejoin: round;
 }
 
+.wish.is-blow .icon-light,
+.wish:not(.is-blow) .icon-blow,
 .sound.is-on .icon-muted,
 .sound:not(.is-on) .icon-on {
   display: none;

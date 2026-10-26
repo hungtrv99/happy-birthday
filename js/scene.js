@@ -8,6 +8,7 @@ import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 
 const CONF_COLORS = [0xff9eb4, 0xffd0dc, 0xffffff, 0xff7a96, 0xffc2d0, 0xffe8ee];
 const SKY = 0xffc8d6;
+const NIGHT = 0x3a2418;
 
 export class BirthdayScene {
   constructor(canvas) {
@@ -27,7 +28,8 @@ export class BirthdayScene {
     this.lastX = 0;
     this.lastY = 0;
     this.lastTap = 0;
-    this.blown = false;
+    this.blown = true;
+    this.candlesLit = false;
     this.tiltX = 0;
     this.ready = false;
     this.revealT = 0;
@@ -36,6 +38,11 @@ export class BirthdayScene {
     this.idleSpin = 0.03;
     this.ageLabel = null;
     this.cakeTopY = 1.22;
+    this.darkT = 0;
+    this._skyDay = new THREE.Color(SKY);
+    this._skyNight = new THREE.Color(NIGHT);
+    this._skyNow = new THREE.Color(SKY);
+    this._lightPos = new THREE.Vector3();
 
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.Fog(SKY, 14, 42);
@@ -95,23 +102,27 @@ export class BirthdayScene {
   }
 
   addLights() {
-    this.scene.add(new THREE.HemisphereLight(0xfff6f9, 0xf7b8c6, 1.22));
+    this.hemi = new THREE.HemisphereLight(0xfff6f9, 0xf7b8c6, 1.22);
+    this.scene.add(this.hemi);
 
-    const key = new THREE.DirectionalLight(0xfff7fb, 1.02);
-    key.position.set(3.2, 7.2, 4.2);
-    this.scene.add(key);
+    this.key = new THREE.DirectionalLight(0xfff7fb, 1.02);
+    this.key.position.set(3.2, 7.2, 4.2);
+    this.scene.add(this.key);
 
-    const fill = new THREE.DirectionalLight(0xffd0dc, 0.58);
-    fill.position.set(-4, 3, -2);
-    this.scene.add(fill);
+    this.fill = new THREE.DirectionalLight(0xffd0dc, 0.58);
+    this.fill.position.set(-4, 3, -2);
+    this.scene.add(this.fill);
 
-    const lift = new THREE.DirectionalLight(0xfff4f7, 0.38);
-    lift.position.set(-1.2, 5.4, 6.2);
-    this.scene.add(lift);
+    this.lift = new THREE.DirectionalLight(0xfff4f7, 0.38);
+    this.lift.position.set(-1.2, 5.4, 6.2);
+    this.scene.add(this.lift);
 
-    this.candleLight = new THREE.PointLight(0xffc4d4, 0.85, 8, 2);
+    this.candleLight = new THREE.PointLight(0xffc56a, 0.85, 8, 2);
     this.candleLight.position.set(0, 2.1, 0.4);
     this.scene.add(this.candleLight);
+
+    this.candleFill = new THREE.PointLight(0xff9a32, 0, 4.5, 1.6);
+    this.scene.add(this.candleFill);
   }
 
   addSparkles() {
@@ -152,8 +163,9 @@ export class BirthdayScene {
     canvas.height = 256;
     const ctx = canvas.getContext("2d");
     const g = ctx.createRadialGradient(128, 128, 8, 128, 128, 128);
-    g.addColorStop(0, "rgba(255, 232, 238, 0.5)");
-    g.addColorStop(0.35, "rgba(255, 168, 188, 0.26)");
+    g.addColorStop(0, "rgba(176, 88, 110, 0.34)");
+    g.addColorStop(0.28, "rgba(214, 132, 154, 0.18)");
+    g.addColorStop(0.62, "rgba(255, 176, 196, 0.07)");
     g.addColorStop(1, "rgba(255, 176, 196, 0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
@@ -179,36 +191,207 @@ export class BirthdayScene {
 
     const board = new THREE.Mesh(
       new THREE.BoxGeometry(2.86, boardH, 2.86),
-      this.cream(0xfff5f4, { roughness: 0.7, clearcoat: 0.04, sheen: 0.06 })
+      this.cream(0xefe4e2, { roughness: 0.78, clearcoat: 0.02, sheen: 0.04 })
     );
     board.position.y = boardH / 2;
     cake.add(board);
 
     const pink = new THREE.Mesh(
       new THREE.CylinderGeometry(R, R, pinkH, 64),
-      this.cream(0xf8c8d2)
+      this.cream(0xeea8bb)
     );
     pink.position.y = boardH + pinkH / 2;
     cake.add(pink);
 
     const white = new THREE.Mesh(
       new THREE.CylinderGeometry(R, R, whiteH, 64),
-      this.cream(0xffffff, { sheen: 0.28, sheenColor: new THREE.Color(0xfff8fb) })
+      this.cream(0xf4ecec, { roughness: 0.7, sheen: 0.16, sheenColor: new THREE.Color(0xffe8ee) })
     );
     white.position.y = boardH + pinkH + whiteH / 2;
     cake.add(white);
 
     const cap = new THREE.Mesh(
       new THREE.CylinderGeometry(R + 0.006, R + 0.006, 0.04, 64),
-      this.cream(0xffffff, { sheen: 0.28, sheenColor: new THREE.Color(0xfff8fb) })
+      this.cream(0xfff6f4, { roughness: 0.58, sheen: 0.2, sheenColor: new THREE.Color(0xffe8ee) })
     );
     cap.position.y = topY - 0.005;
     cake.add(cap);
 
     this.addBandHearts(cake, R, boardH + pinkH * 0.48);
     this.addTopDecor(cake, topY + 0.02);
-    this.addRaisedLabel(cake, topY + 0.02);
+    this.addCakeLettering(cake, topY + 0.02);
     return cake;
+  }
+
+  makeFlame(y) {
+    const flame = new THREE.Group();
+    const glow = new THREE.Mesh(
+      new THREE.SphereGeometry(0.09, 12, 12),
+      new THREE.MeshBasicMaterial({
+        color: 0xff7a28,
+        transparent: true,
+        opacity: 0.62,
+        depthWrite: false,
+      })
+    );
+    glow.scale.set(1.2, 2.55, 1.2);
+    const orange = new THREE.Mesh(
+      new THREE.SphereGeometry(0.062, 12, 12),
+      new THREE.MeshBasicMaterial({
+        color: 0xffb03a,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+      })
+    );
+    orange.scale.set(0.85, 2.15, 0.85);
+    const core = new THREE.Mesh(
+      new THREE.SphereGeometry(0.038, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xfff8d0 })
+    );
+    core.scale.set(0.72, 1.85, 0.72);
+    core.position.y = 0.008;
+    const tip = new THREE.Mesh(
+      new THREE.SphereGeometry(0.018, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xfffef6 })
+    );
+    tip.scale.set(0.48, 1.15, 0.48);
+    tip.position.y = 0.05;
+    const blue = new THREE.Mesh(
+      new THREE.SphereGeometry(0.022, 10, 10),
+      new THREE.MeshBasicMaterial({
+        color: 0x8ec8ff,
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: false,
+      })
+    );
+    blue.scale.set(0.9, 0.65, 0.9);
+    blue.position.y = -0.022;
+    flame.add(glow, orange, core, tip, blue);
+    flame.position.y = y;
+    flame.visible = false;
+    this.flames.push(flame);
+    return flame;
+  }
+
+  clearCandles() {
+    this.flames.length = 0;
+    if (!this.candleGroup) return;
+    while (this.candleGroup.children.length) {
+      this.candleGroup.remove(this.candleGroup.children[0]);
+    }
+  }
+
+  placeNumberCandles(y, items) {
+    const gap = 0.06;
+    const total = items.reduce((s, it) => s + it.width, 0) + gap * (items.length - 1);
+    let x = -total / 2;
+    for (const item of items) {
+      x += item.width / 2;
+      item.group.position.set(x, y, 0);
+      item.group.rotation.set(0, 0, 0);
+      this.candleGroup.add(item.group);
+      x += item.width / 2 + gap;
+    }
+  }
+
+  addNumberCandleFallback(char, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 320;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 256, 320);
+    ctx.fillStyle = "#e05670";
+    ctx.font = "700 220px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(char, 128, 168);
+    const tex = new THREE.CanvasTexture(canvas);
+    const group = new THREE.Group();
+    const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.36, 0.46),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide })
+    );
+    plane.position.y = 0.23;
+    group.add(plane);
+    const peg = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.016, 0.016, 0.1, 8),
+      this.cream(color, { roughness: 0.5 })
+    );
+    peg.position.y = -0.02;
+    group.add(peg);
+    const wick = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.006, 0.006, 0.045, 6),
+      new THREE.MeshStandardMaterial({ color: 0x4a2a28, roughness: 1 })
+    );
+    wick.position.y = 0.48;
+    group.add(wick);
+    group.add(this.makeFlame(0.56));
+    return { group, width: 0.4 };
+  }
+
+  makeNumberCandle(font, char, color) {
+    const geo = new TextGeometry(char, {
+      font,
+      size: 0.41,
+      depth: 0.17,
+      curveSegments: 8,
+      bevelEnabled: true,
+      bevelThickness: 0.022,
+      bevelSize: 0.014,
+      bevelSegments: 3,
+    });
+    geo.computeBoundingBox();
+    const bb = geo.boundingBox;
+    const width = bb.max.x - bb.min.x;
+    const height = bb.max.y - bb.min.y;
+    geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+    const wax = new THREE.Mesh(
+      geo,
+      this.cream(color, { roughness: 0.38, clearcoat: 0.22 })
+    );
+    const group = new THREE.Group();
+    group.add(wax);
+    const peg = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.018, 0.12, 8),
+      this.cream(color, { roughness: 0.5 })
+    );
+    peg.position.y = -0.02;
+    group.add(peg);
+    const wick = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.007, 0.007, 0.05, 6),
+      new THREE.MeshStandardMaterial({ color: 0x4a2a28, roughness: 1 })
+    );
+    wick.position.y = height + 0.02;
+    group.add(wick);
+    group.add(this.makeFlame(height + 0.09));
+    group.rotation.set(0, 0, 0);
+    return { group, width: width + 0.04 };
+  }
+
+  addCakeLettering(parent, y) {
+    this.candleGroup = new THREE.Group();
+    parent.add(this.candleGroup);
+    this.placeNumberCandles(y, [
+      this.addNumberCandleFallback("2", 0xe05670),
+      this.addNumberCandleFallback("0", 0xee7a96),
+    ]);
+    const loader = new FontLoader();
+    loader.load(
+      "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/fonts/helvetiker_bold.typeface.json",
+      (font) => {
+        const wasLit = this.candlesLit && !this.blown;
+        this.clearCandles();
+        this.placeNumberCandles(y, [
+          this.makeNumberCandle(font, "2", 0xe05670),
+          this.makeNumberCandle(font, "0", 0xee7a96),
+        ]);
+        if (wasLit) for (const f of this.flames) f.visible = true;
+      },
+      undefined,
+      () => {}
+    );
   }
 
   pipedHeart(color, scale) {
@@ -219,12 +402,16 @@ export class BirthdayScene {
 
   addBandHearts(parent, radius, y) {
     const items = [
-      [0.15, 0xe8899a, 0.26],
-      [1.05, 0xfff8f4, 0.22],
-      [2.05, 0xe8899a, 0.25],
-      [3.15, 0xfff8f4, 0.21],
-      [4.2, 0xe8899a, 0.26],
-      [5.25, 0xfff8f4, 0.22],
+      [0.12, 0xe05670, 0.32],
+      [0.78, 0xfff8f4, 0.16],
+      [1.42, 0xff9eb4, 0.24],
+      [2.05, 0xee7a96, 0.3],
+      [2.68, 0xffd0dc, 0.14],
+      [3.28, 0xff7a96, 0.22],
+      [3.9, 0xfff8f4, 0.18],
+      [4.48, 0xf07090, 0.28],
+      [5.1, 0xffc2d0, 0.15],
+      [5.72, 0xe8899a, 0.26],
     ];
     for (const [a, color, sc] of items) {
       const g = new THREE.Group();
@@ -239,16 +426,22 @@ export class BirthdayScene {
 
   addTopDecor(parent, y) {
     const hearts = [
-      [0.68, 0.52, 0.26, 0xe8899a],
-      [-0.6, 0.42, 0.22, 0xe8899a],
-      [0.84, -0.1, 0.25, 0xe8899a],
-      [-0.22, 0.82, 0.21, 0xe8899a],
-      [0.26, -0.74, 0.25, 0xe8899a],
-      [0.96, 0.3, 0.21, 0xfff8f4],
-      [-0.84, -0.14, 0.22, 0xfff8f4],
-      [0.52, -0.42, 0.21, 0xfff8f4],
-      [-0.48, -0.54, 0.24, 0xe8899a],
-      [0.12, 0.68, 0.2, 0xfff8f4],
+      [0.72, 0.58, 0.32, 0xe05670],
+      [-0.74, 0.52, 0.18, 0xff9eb4],
+      [0.86, -0.12, 0.26, 0xee7a96],
+      [-0.82, -0.08, 0.14, 0xfff8f4],
+      [0.48, -0.78, 0.3, 0xff7a96],
+      [-0.52, -0.76, 0.16, 0xffc2d0],
+      [0.92, 0.28, 0.12, 0xf07090],
+      [-0.9, 0.22, 0.28, 0xe8899a],
+      [0.28, 0.82, 0.2, 0xffd0dc],
+      [-0.22, 0.8, 0.34, 0xee7a96],
+      [0.62, -0.52, 0.15, 0xfff8f4],
+      [-0.58, 0.68, 0.22, 0xff9eb4],
+      [0.18, -0.88, 0.27, 0xe05670],
+      [-0.9, -0.42, 0.13, 0xffb4c8],
+      [0.78, 0.72, 0.17, 0xff7a96],
+      [-0.38, -0.9, 0.31, 0xf07090],
     ];
     for (const [x, z, sc, color] of hearts) {
       const heart = this.pipedHeart(color, sc);
@@ -267,66 +460,6 @@ export class BirthdayScene {
       d.position.set(x, y + 0.016, z);
       parent.add(d);
     }
-  }
-
-  addRaisedLabel(parent, y) {
-    this.addRaisedLabelFallback(parent, y);
-    const loader = new FontLoader();
-    loader.load(
-      "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/fonts/helvetiker_bold.typeface.json",
-      (font) => {
-        const geo = new TextGeometry("EM 20+", {
-          font,
-          size: 0.3,
-          depth: 0.07,
-          curveSegments: 8,
-          bevelEnabled: true,
-          bevelThickness: 0.018,
-          bevelSize: 0.01,
-          bevelSegments: 3,
-        });
-        geo.computeBoundingBox();
-        const bb = geo.boundingBox;
-        geo.translate(
-          -(bb.min.x + bb.max.x) / 2,
-          -(bb.min.y + bb.max.y) / 2,
-          -(bb.min.z + bb.max.z) / 2
-        );
-        const mesh = new THREE.Mesh(
-          geo,
-          this.cream(0xe05670, { roughness: 0.28, clearcoat: 0.3 })
-        );
-        mesh.rotation.x = -Math.PI / 2;
-        mesh.position.set(0, y + 0.05, 0);
-        if (this.ageLabel) parent.remove(this.ageLabel);
-        this.ageLabel = mesh;
-        parent.add(mesh);
-      },
-      undefined,
-      () => {}
-    );
-  }
-
-  addRaisedLabelFallback(parent, y) {
-    const canvas = document.createElement("canvas");
-    canvas.width = 1024;
-    canvas.height = 256;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 1024, 256);
-    ctx.fillStyle = "#e05670";
-    ctx.font = "700 140px Georgia, serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("EM 20+", 512, 128);
-    const tex = new THREE.CanvasTexture(canvas);
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.35, 0.34),
-      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
-    );
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.set(0, y + 0.03, 0);
-    this.ageLabel = mesh;
-    parent.add(mesh);
   }
 
   heartGeometry() {
@@ -430,7 +563,7 @@ export class BirthdayScene {
   }
 
   bindInput() {
-    const ui = (el) => el instanceof Element && el.closest(".sound");
+    const ui = (el) => el instanceof Element && el.closest(".sound, .wish");
     const canvas = this.canvas;
     canvas.style.touchAction = "none";
     canvas.style.pointerEvents = "auto";
@@ -476,13 +609,8 @@ export class BirthdayScene {
       if (ui(e.target)) return;
       if (this.dragMoved) return;
       this.punch = 1.1;
-      const now = performance.now();
-      if (now - this.lastTap < 320) this.blowCandles();
-      else {
-        this.burst();
-        this.spawnHearts();
-      }
-      this.lastTap = now;
+      this.burst();
+      this.spawnHearts();
     };
 
     window.addEventListener("pointerdown", onDown);
@@ -529,22 +657,21 @@ export class BirthdayScene {
     }
   }
 
+  lightCandles() {
+    this.candlesLit = true;
+    this.blown = false;
+    this.candleGroup.visible = true;
+    for (const f of this.flames) f.visible = true;
+    document.body.classList.add("is-candlelit");
+  }
+
   blowCandles() {
-    if (this.blown) {
-      this.relight();
-      return;
-    }
+    if (!this.candlesLit || this.blown) return;
     this.blown = true;
     for (const f of this.flames) f.visible = false;
     this.burst();
-    window.setTimeout(() => this.relight(), 2400);
-  }
-
-  relight() {
-    this.blown = false;
-    for (const f of this.flames) f.visible = true;
-    this.burst();
     this.spawnHearts();
+    document.body.classList.remove("is-candlelit");
   }
 
   onResize() {
@@ -586,19 +713,55 @@ export class BirthdayScene {
       this.cake.position.y = -0.28 + Math.sin(t * 0.9) * 0.03;
     }
 
-    this.candleLight.intensity = this.blown
-      ? 0.18
-      : 0.78 + Math.sin(t * 11) * 0.08 + Math.sin(t * 17) * 0.04;
+    const lit = this.candlesLit && !this.blown;
+    this.darkT += ((lit ? 1 : 0) - this.darkT) * Math.min(1, dt * 2.8);
+    const d = this.darkT;
+    this.hemi.intensity = 1.22 * (1 - d) + 0.42 * d;
+    this.hemi.color.setRGB(1, 0.965, 0.976).lerp(new THREE.Color(0xffd4a0), d);
+    this.hemi.groundColor.set(0xf7b8c6).lerp(new THREE.Color(0x4a2a18), d);
+    this.key.intensity = 1.02 * (1 - d) + 0.36 * d;
+    this.fill.intensity = 0.58 * (1 - d) + 0.22 * d;
+    this.lift.intensity = 0.38 * (1 - d) + 0.4 * d;
+    this._skyNow.copy(this._skyDay).lerp(this._skyNight, d);
+    this.renderer.setClearColor(this._skyNow, 1);
+    this.scene.fog.color.copy(this._skyNow);
+    this.scene.fog.near = 14 - d * 4;
+    this.scene.fog.far = 42 - d * 12;
+    this.renderer.toneMappingExposure = 1.17 - d * 0.06;
+
+    const flicker = 0.88 + Math.sin(t * 11) * 0.12 + Math.sin(t * 17) * 0.08;
+    if (this.cake) {
+      this.cake.getWorldPosition(this._lightPos);
+      this.candleLight.position.set(this._lightPos.x, this._lightPos.y + 1.28, this._lightPos.z + 0.08);
+      this.candleFill.position.set(this._lightPos.x, this._lightPos.y + 1.08, this._lightPos.z + 0.55);
+    }
+    this.candleLight.color.set(d > 0.3 ? 0xffe08a : 0xffc4d4);
+    this.candleLight.intensity = lit ? 4.4 * flicker : 0.78 + Math.sin(t * 11) * 0.08;
+    this.candleLight.distance = lit ? 8.5 : 8;
+    this.candleLight.decay = lit ? 1.15 : 2;
+    this.candleFill.color.set(0xffc878);
+    this.candleFill.intensity = lit ? 2.6 * flicker : 0;
+    this.candleFill.distance = lit ? 6.5 : 4.5;
+    this.candleFill.decay = 1.1;
+    if (this.bloom) this.bloom.strength = lit ? 0.2 : 0.03;
+
+    if (this.candleGroup?.visible) {
+      if (this._candlePop == null) this._candlePop = 1;
+      this._candlePop = Math.min(1, this._candlePop + dt * 4.2);
+      const pop = 1 - Math.pow(1 - this._candlePop, 3);
+      this.candleGroup.scale.setScalar(pop);
+    }
 
     for (let i = 0; i < this.flames.length; i++) {
       const f = this.flames[i];
-      const b = f.userData.base || { x: 0.7, y: 1.25, z: 0.7 };
+      if (!f.visible) continue;
       const flicker = 0.85 + Math.sin(t * 16 + i) * 0.12 + Math.sin(t * 27 + i * 2) * 0.08;
-      f.scale.set(b.x * flicker, b.y * flicker, b.z * flicker);
+      f.scale.set(flicker, 0.9 + flicker * 0.35, flicker);
+      f.position.x = Math.sin(t * 19 + i) * 0.006;
     }
 
     this.stars.rotation.y = t * 0.02;
-    this.stars.material.opacity = 0.55 + Math.sin(t * 1.6) * 0.2;
+    this.stars.material.opacity = (0.55 + Math.sin(t * 1.6) * 0.2) * (1 - d * 0.82);
 
     for (const orb of this.orbs) {
       const d = orb.userData;

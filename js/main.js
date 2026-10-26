@@ -13,7 +13,7 @@ const slides = [
   { kicker: "", text: "Học hành thuận lợi", className: "is-wish" },
   {
     kicker: "",
-    text: "Luôn được yêu thương và giữ mãi nụ cười trên môi",
+    text: "Luôn được yêu thương và giữ mãi nụ cười trên môi nhé",
     className: "is-wish is-long",
   },
 ];
@@ -24,34 +24,28 @@ const textEl = document.getElementById("storyText");
 const stageEl = document.getElementById("stage");
 const hintEl = document.getElementById("hint");
 const guideEl = document.getElementById("guide");
-const soundBtn = document.getElementById("sound");
+const wishBtn = document.getElementById("wish");
 const canvas = document.getElementById("scene");
 const audioEl = document.getElementById("song");
+const birthdayEl = document.getElementById("birthday");
 
 const scene = new BirthdayScene(canvas);
 scene.start();
 
-const song = new BirthdaySong(audioEl);
-let musicOn = false;
+const song = new BirthdaySong(audioEl, birthdayEl);
 let started = false;
 let storyDone = false;
 let index = -1;
 let timer = 0;
 
-function isSoundButton(target) {
-  return target instanceof Element && target.closest(".sound");
+function isChrome(target) {
+  return target instanceof Element && target.closest(".wish");
 }
 
-async function enableMusic() {
-  try {
-    await song.play();
-    musicOn = true;
-    soundBtn.hidden = false;
-    soundBtn.classList.add("is-on");
-    soundBtn.setAttribute("aria-label", "Tắt nhạc");
-  } catch {
-    hintEl.textContent = "Chạm thêm một lần nữa để bật nhạc";
-  }
+function syncWishButton() {
+  const lit = scene.candlesLit && !scene.blown;
+  wishBtn.classList.toggle("is-blow", lit);
+  wishBtn.setAttribute("aria-label", lit ? "Thổi nến" : "Đốt nến");
 }
 
 function showSlide(i) {
@@ -87,33 +81,35 @@ function finishStory() {
   scene.reveal();
   hintEl.classList.add("is-gone");
   guideEl.hidden = false;
+  wishBtn.hidden = false;
+  syncWishButton();
   requestAnimationFrame(() => guideEl.classList.add("is-shown"));
 }
 
+function onWish(e) {
+  e.stopPropagation();
+  if (scene.candlesLit && !scene.blown) {
+    scene.blowCandles();
+    song.resumeBg();
+  } else {
+    scene.lightCandles();
+    song.playWish().catch(() => {});
+  }
+  syncWishButton();
+}
+
 async function onPointer(e) {
-  if (isSoundButton(e.target)) return;
+  if (isChrome(e.target)) return;
   if (started) return;
   started = true;
   hintEl.classList.add("is-gone");
-  enableMusic();
+  song.startBg().catch(() => {});
   nextSlide();
-}
-
-async function toggleMusic(e) {
-  e.stopPropagation();
-  if (!musicOn) {
-    await enableMusic();
-    return;
-  }
-  song.stop();
-  musicOn = false;
-  soundBtn.classList.remove("is-on");
-  soundBtn.setAttribute("aria-label", "Bật nhạc");
 }
 
 window.addEventListener("pointerdown", onPointer);
 window.addEventListener("keydown", (e) => {
   if (e.key === " " || e.key === "Enter") onPointer(e);
 });
-soundBtn.addEventListener("click", toggleMusic);
-soundBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+wishBtn.addEventListener("click", onWish);
+wishBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
