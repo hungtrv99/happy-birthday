@@ -23,6 +23,7 @@ const kickerEl = document.getElementById("storyKicker");
 const textEl = document.getElementById("storyText");
 const stageEl = document.getElementById("stage");
 const hintEl = document.getElementById("hint");
+const guideEl = document.getElementById("guide");
 const soundBtn = document.getElementById("sound");
 const canvas = document.getElementById("scene");
 const audioEl = document.getElementById("song");
@@ -84,9 +85,9 @@ function finishStory() {
   stageEl.classList.remove("is-hidden");
   requestAnimationFrame(() => stageEl.classList.add("is-shown"));
   scene.reveal();
-  hintEl.textContent = "Kéo xoay bánh · Chạm confetti";
-  hintEl.classList.remove("is-gone", "is-start");
-  window.setTimeout(() => hintEl.classList.add("is-gone"), 7000);
+  hintEl.classList.add("is-gone");
+  guideEl.hidden = false;
+  requestAnimationFrame(() => guideEl.classList.add("is-shown"));
 }
 
 async function onPointer(e) {

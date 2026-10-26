@@ -1,7 +1,7 @@
 :root {
-  --rose: #d97a8c;
-  --ink: #8a4a58;
-  --blush: #f3cfc8;
+  --rose: #ee7a96;
+  --ink: #c45d72;
+  --blush: #ffc8d6;
 }
 
 * {
@@ -15,9 +15,9 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #f3cfc8;
+  background: #ffc8d6;
   color: var(--ink);
-  font-family: "Outfit", sans-serif;
+  font-family: "Cormorant Garamond", serif;
   touch-action: none;
   user-select: none;
   cursor: grab;
@@ -44,7 +44,8 @@ body.is-dragging {
 .glow,
 .stage,
 .story,
-.hint {
+.hint,
+.guide {
   pointer-events: none;
 }
 
@@ -57,12 +58,12 @@ body.is-dragging {
 
 .vignette {
   background:
-    radial-gradient(ellipse at center, transparent 52%, rgba(214, 140, 148, 0.22) 100%),
-    linear-gradient(to top, rgba(214, 150, 148, 0.2), transparent 38%);
+    radial-gradient(ellipse at center, transparent 52%, rgba(255, 150, 176, 0.2) 100%),
+    linear-gradient(to top, rgba(255, 168, 188, 0.18), transparent 38%);
 }
 
 .glow {
-  background: radial-gradient(circle at 50% 58%, rgba(255, 232, 226, 0.18), transparent 44%);
+  background: radial-gradient(circle at 50% 58%, rgba(255, 236, 242, 0.28), transparent 44%);
 }
 
 .story {
@@ -88,7 +89,7 @@ body.is-dragging {
   font-size: 0.78rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: #c47b7a;
+  color: #e8899a;
 }
 
 .story-text {
@@ -98,7 +99,7 @@ body.is-dragging {
   font-weight: 500;
   font-size: clamp(1.7rem, 4.8vw, 2.7rem);
   line-height: 1.35;
-  color: #c45c6a;
+  color: #e05670;
 }
 
 .story-text.is-long {
@@ -110,7 +111,7 @@ body.is-dragging {
   font-family: "Great Vibes", cursive;
   font-style: normal;
   font-size: clamp(3.6rem, 14vw, 7.4rem);
-  color: #d97a8c;
+  color: #ee7a96;
   text-shadow: 0 8px 24px rgba(201, 120, 132, 0.22);
 }
 
@@ -136,7 +137,7 @@ body.is-dragging {
   align-items: center;
   text-align: center;
   padding: 5.5vh 6vw 6vh;
-  background: linear-gradient(to bottom, rgba(243, 207, 200, 0.42) 0%, transparent 40%);
+  background: linear-gradient(to bottom, rgba(255, 220, 228, 0.5) 0%, transparent 40%);
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 1s ease, transform 1s ease;
@@ -155,7 +156,7 @@ body.is-dragging {
 .eyebrow {
   font-size: 0.78rem;
   letter-spacing: 0.16em;
-  color: #c47b7a;
+  color: #e8899a;
 }
 
 .title {
@@ -165,25 +166,26 @@ body.is-dragging {
   font-size: clamp(2.1rem, 6vw, 4.4rem);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #c45c6a;
+  color: #e05670;
 }
 
 .name {
-  margin-top: 2px;
+  margin-top: 17px;
   font-family: "Great Vibes", cursive;
   font-size: clamp(2.8rem, 8.5vw, 5.8rem);
   line-height: 1.1;
-  color: #d97a8c;
+  color: #ee7a96;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 24px rgba(201, 120, 132, 0.22);
 }
 
 .date-mark {
   margin-top: auto;
+  margin-bottom: 5.5vh;
   font-family: "Cormorant Garamond", serif;
   font-weight: 600;
   font-size: clamp(2.8rem, 8.5vw, 4.6rem);
   letter-spacing: 0.22em;
-  color: #c45c6a;
+  color: #e05670;
 }
 
 .hint {
@@ -196,28 +198,50 @@ body.is-dragging {
   padding: 0 24px;
   width: 100%;
   text-align: center;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #c47b7a;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #e05670;
   animation: pulse 2.4s ease-in-out infinite;
 }
 
 .hint.is-start {
-  bottom: 28vh;
-  font-family: "Playfair Display", "Cormorant Garamond", serif;
-  font-style: italic;
-  font-size: clamp(1.45rem, 4.2vw, 2.05rem);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  color: #c45c6a;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(2.05rem, 6vw, 3.15rem);
   animation: pulse-start 2.4s ease-in-out infinite;
 }
 
 .hint.is-gone {
   display: none;
+}
+
+.guide[hidden] {
+  display: none;
+}
+
+.guide {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 4;
+  margin: 0;
+  max-width: min(52vw, 16rem);
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(0.78rem, 2.1vw, 0.95rem);
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+  color: #d36a7e;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.guide.is-shown {
+  opacity: 0.82;
 }
 
 .sound[hidden] {
@@ -235,7 +259,7 @@ body.is-dragging {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);
-  color: #d97a8c;
+  color: #ee7a96;
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -283,18 +307,23 @@ body.is-dragging {
   }
 }
 
+@keyframes float-start {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 @media (max-width: 720px) {
   .title,
   .eyebrow {
     letter-spacing: 0.08em;
   }
 
-  .hint {
-    letter-spacing: 0.06em;
-  }
-
   .hint.is-start {
-    bottom: 26vh;
-    letter-spacing: 0.03em;
+    font-size: clamp(1.85rem, 7.2vw, 2.6rem);
   }
 }

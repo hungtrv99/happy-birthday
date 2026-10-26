@@ -6,8 +6,8 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { FontLoader } from "three/addons/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 
-const CONF_COLORS = [0xe8a0b0, 0xf5d0c8, 0xefc4a8, 0xffffff, 0xd98b9c, 0xf0c9c4];
-const SKY = 0xf3cfc8;
+const CONF_COLORS = [0xff9eb4, 0xffd0dc, 0xffffff, 0xff7a96, 0xffc2d0, 0xffe8ee];
+const SKY = 0xffc8d6;
 
 export class BirthdayScene {
   constructor(canvas) {
@@ -31,7 +31,7 @@ export class BirthdayScene {
     this.tiltX = 0;
     this.ready = false;
     this.revealT = 0;
-    this.cakeScale = 0.75;
+    this.cakeScale = 1.07;
     this.punch = 1;
     this.idleSpin = 0.03;
     this.ageLabel = null;
@@ -52,8 +52,8 @@ export class BirthdayScene {
     });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.mobile ? 1.5 : 1.8));
     this.renderer.setClearColor(SKY, 1);
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.08;
+    this.renderer.toneMapping = THREE.LinearToneMapping;
+    this.renderer.toneMappingExposure = 1.17;
 
     this.addLights();
     this.addSparkles();
@@ -83,42 +83,42 @@ export class BirthdayScene {
   cream(color, extra = {}) {
     return new THREE.MeshPhysicalMaterial({
       color,
-      roughness: 0.52,
-      metalness: 0.01,
-      clearcoat: 0.14,
-      clearcoatRoughness: 0.55,
-      sheen: 0.72,
-      sheenRoughness: 0.48,
-      sheenColor: new THREE.Color(0xffe4ec),
+      roughness: 0.64,
+      metalness: 0,
+      clearcoat: 0.03,
+      clearcoatRoughness: 0.8,
+      sheen: 0.22,
+      sheenRoughness: 0.62,
+      sheenColor: new THREE.Color(0xffe8ee),
       ...extra,
     });
   }
 
   addLights() {
-    this.scene.add(new THREE.HemisphereLight(0xffefe8, 0xd4a098, 0.85));
+    this.scene.add(new THREE.HemisphereLight(0xfff6f9, 0xf7b8c6, 1.22));
 
-    const key = new THREE.DirectionalLight(0xfff4ee, 1.15);
+    const key = new THREE.DirectionalLight(0xfff7fb, 1.02);
     key.position.set(3.2, 7.2, 4.2);
     this.scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xf0c8c4, 0.55);
+    const fill = new THREE.DirectionalLight(0xffd0dc, 0.58);
     fill.position.set(-4, 3, -2);
     this.scene.add(fill);
 
-    this.candleLight = new THREE.PointLight(0xffc9a8, 2.2, 10, 1.8);
-    this.candleLight.position.set(0, 1.5, 0);
-    this.scene.add(this.candleLight);
+    const lift = new THREE.DirectionalLight(0xfff4f7, 0.38);
+    lift.position.set(-1.2, 5.4, 6.2);
+    this.scene.add(lift);
 
-    const pool = new THREE.PointLight(0xf8ddd6, 1.0, 9, 2);
-    pool.position.set(0, 0.5, 1.6);
-    this.scene.add(pool);
+    this.candleLight = new THREE.PointLight(0xffc4d4, 0.85, 8, 2);
+    this.candleLight.position.set(0, 2.1, 0.4);
+    this.scene.add(this.candleLight);
   }
 
   addSparkles() {
     const count = this.mobile ? 500 : 900;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
-    const palette = [new THREE.Color(0xfff4ee), new THREE.Color(0xf0c4c8), new THREE.Color(0xefd3b8)];
+    const palette = [new THREE.Color(0xfff5f8), new THREE.Color(0xffc0d0), new THREE.Color(0xffe0e8)];
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 18;
@@ -152,9 +152,9 @@ export class BirthdayScene {
     canvas.height = 256;
     const ctx = canvas.getContext("2d");
     const g = ctx.createRadialGradient(128, 128, 8, 128, 128, 128);
-    g.addColorStop(0, "rgba(255, 236, 230, 0.42)");
-    g.addColorStop(0.35, "rgba(224, 160, 160, 0.22)");
-    g.addColorStop(1, "rgba(214, 150, 148, 0)");
+    g.addColorStop(0, "rgba(255, 232, 238, 0.5)");
+    g.addColorStop(0.35, "rgba(255, 168, 188, 0.26)");
+    g.addColorStop(1, "rgba(255, 176, 196, 0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
     const tex = new THREE.CanvasTexture(canvas);
@@ -179,28 +179,28 @@ export class BirthdayScene {
 
     const board = new THREE.Mesh(
       new THREE.BoxGeometry(2.86, boardH, 2.86),
-      this.cream(0xf7f4f0, { roughness: 0.7, clearcoat: 0.04, sheen: 0.06 })
+      this.cream(0xfff5f4, { roughness: 0.7, clearcoat: 0.04, sheen: 0.06 })
     );
     board.position.y = boardH / 2;
     cake.add(board);
 
     const pink = new THREE.Mesh(
       new THREE.CylinderGeometry(R, R, pinkH, 64),
-      this.cream(0xf0b0bd)
+      this.cream(0xf8c8d2)
     );
     pink.position.y = boardH + pinkH / 2;
     cake.add(pink);
 
     const white = new THREE.Mesh(
       new THREE.CylinderGeometry(R, R, whiteH, 64),
-      this.cream(0xfffdfb)
+      this.cream(0xffffff, { sheen: 0.28, sheenColor: new THREE.Color(0xfff8fb) })
     );
     white.position.y = boardH + pinkH + whiteH / 2;
     cake.add(white);
 
     const cap = new THREE.Mesh(
       new THREE.CylinderGeometry(R + 0.006, R + 0.006, 0.04, 64),
-      this.cream(0xffffff)
+      this.cream(0xffffff, { sheen: 0.28, sheenColor: new THREE.Color(0xfff8fb) })
     );
     cap.position.y = topY - 0.005;
     cake.add(cap);
@@ -219,12 +219,12 @@ export class BirthdayScene {
 
   addBandHearts(parent, radius, y) {
     const items = [
-      [0.15, 0xe8899a, 0.2],
-      [1.05, 0xfff8f4, 0.17],
-      [2.05, 0xe8899a, 0.19],
-      [3.15, 0xfff8f4, 0.16],
-      [4.2, 0xe8899a, 0.2],
-      [5.25, 0xfff8f4, 0.17],
+      [0.15, 0xe8899a, 0.26],
+      [1.05, 0xfff8f4, 0.22],
+      [2.05, 0xe8899a, 0.25],
+      [3.15, 0xfff8f4, 0.21],
+      [4.2, 0xe8899a, 0.26],
+      [5.25, 0xfff8f4, 0.22],
     ];
     for (const [a, color, sc] of items) {
       const g = new THREE.Group();
@@ -239,16 +239,16 @@ export class BirthdayScene {
 
   addTopDecor(parent, y) {
     const hearts = [
-      [0.68, 0.52, 0.2, 0xe8899a],
-      [-0.6, 0.42, 0.17, 0xe8899a],
-      [0.84, -0.1, 0.19, 0xe8899a],
-      [-0.22, 0.82, 0.16, 0xe8899a],
-      [0.26, -0.74, 0.19, 0xe8899a],
-      [0.96, 0.3, 0.16, 0xfff8f4],
-      [-0.84, -0.14, 0.17, 0xfff8f4],
-      [0.52, -0.42, 0.16, 0xfff8f4],
-      [-0.48, -0.54, 0.18, 0xe8899a],
-      [0.12, 0.68, 0.15, 0xfff8f4],
+      [0.68, 0.52, 0.26, 0xe8899a],
+      [-0.6, 0.42, 0.22, 0xe8899a],
+      [0.84, -0.1, 0.25, 0xe8899a],
+      [-0.22, 0.82, 0.21, 0xe8899a],
+      [0.26, -0.74, 0.25, 0xe8899a],
+      [0.96, 0.3, 0.21, 0xfff8f4],
+      [-0.84, -0.14, 0.22, 0xfff8f4],
+      [0.52, -0.42, 0.21, 0xfff8f4],
+      [-0.48, -0.54, 0.24, 0xe8899a],
+      [0.12, 0.68, 0.2, 0xfff8f4],
     ];
     for (const [x, z, sc, color] of hearts) {
       const heart = this.pipedHeart(color, sc);
@@ -391,7 +391,7 @@ export class BirthdayScene {
       const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.05 + Math.random() * 0.04, 12, 12),
         new THREE.MeshBasicMaterial({
-          color: i % 2 ? 0xfff4ee : 0xe8a0b0,
+          color: i % 2 ? 0xfff0f5 : 0xff9eb4,
           transparent: true,
           opacity: 0.65,
         })
@@ -408,7 +408,7 @@ export class BirthdayScene {
   }
 
   addHearts() {
-    const mat = this.cream(0xd97a8c);
+    const mat = this.cream(0xf07090);
     for (let i = 0; i < 16; i++) {
       const heart = new THREE.Mesh(this.heartGeometry(), mat.clone());
       heart.material.transparent = true;
@@ -424,7 +424,7 @@ export class BirthdayScene {
     this.renderer.getSize(size);
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.bloom = new UnrealBloomPass(size, 0.08, 0.2, 0.92);
+    this.bloom = new UnrealBloomPass(size, 0.03, 0.15, 0.98);
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
   }
@@ -587,8 +587,8 @@ export class BirthdayScene {
     }
 
     this.candleLight.intensity = this.blown
-      ? 0.25
-      : 2.6 + Math.sin(t * 11) * 0.35 + Math.sin(t * 17) * 0.18;
+      ? 0.18
+      : 0.78 + Math.sin(t * 11) * 0.08 + Math.sin(t * 17) * 0.04;
 
     for (let i = 0; i < this.flames.length; i++) {
       const f = this.flames[i];
