@@ -25,6 +25,7 @@ const stageEl = document.getElementById("stage");
 const hintEl = document.getElementById("hint");
 const guideEl = document.getElementById("guide");
 const wishBtn = document.getElementById("wish");
+const letterEl = document.getElementById("letter");
 const canvas = document.getElementById("scene");
 const audioEl = document.getElementById("song");
 const birthdayEl = document.getElementById("birthday");
@@ -35,11 +36,12 @@ scene.start();
 const song = new BirthdaySong(audioEl, birthdayEl);
 let started = false;
 let storyDone = false;
+let letterShown = false;
 let index = -1;
 let timer = 0;
 
 function isChrome(target) {
-  return target instanceof Element && target.closest(".wish");
+  return target instanceof Element && target.closest(".wish, .letter");
 }
 
 function syncWishButton() {
@@ -86,11 +88,39 @@ function finishStory() {
   requestAnimationFrame(() => guideEl.classList.add("is-shown"));
 }
 
+function openLetter() {
+  if (letterShown) return;
+  letterShown = true;
+  wishBtn.hidden = true;
+  guideEl.classList.remove("is-shown");
+  letterEl.hidden = false;
+  document.body.classList.add("is-letter");
+  requestAnimationFrame(() => letterEl.classList.add("is-open"));
+}
+
+function closeLetter() {
+  if (!letterEl.classList.contains("is-open")) return;
+  letterEl.classList.remove("is-open");
+  document.body.classList.remove("is-letter");
+  window.setTimeout(() => {
+    letterEl.hidden = true;
+    wishBtn.hidden = false;
+    guideEl.classList.add("is-shown");
+    syncWishButton();
+  }, 520);
+}
+
 function onWish(e) {
   e.stopPropagation();
   if (scene.candlesLit && !scene.blown) {
     scene.blowCandles();
     song.resumeBg();
+    if (!letterShown) {
+      wishBtn.hidden = true;
+      guideEl.classList.remove("is-shown");
+      document.body.classList.add("is-letter");
+      timer = window.setTimeout(openLetter, 1200);
+    }
   } else {
     scene.lightCandles();
     song.playWish().catch(() => {});
@@ -113,3 +143,7 @@ window.addEventListener("keydown", (e) => {
 });
 wishBtn.addEventListener("click", onWish);
 wishBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+letterEl.addEventListener("pointerdown", (e) => {
+  e.stopPropagation();
+  closeLetter();
+});
