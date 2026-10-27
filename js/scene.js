@@ -322,13 +322,7 @@ export class BirthdayScene {
     );
     peg.position.y = -0.02;
     group.add(peg);
-    const wick = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.006, 0.006, 0.045, 6),
-      new THREE.MeshStandardMaterial({ color: 0x4a2a28, roughness: 1 })
-    );
-    wick.position.y = 0.48;
-    group.add(wick);
-    group.add(this.makeFlame(0.56));
+    group.add(this.makeFlame(0.52));
     return { group, width: 0.4 };
   }
 
@@ -360,13 +354,7 @@ export class BirthdayScene {
     );
     peg.position.y = -0.02;
     group.add(peg);
-    const wick = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.007, 0.007, 0.05, 6),
-      new THREE.MeshStandardMaterial({ color: 0x4a2a28, roughness: 1 })
-    );
-    wick.position.y = height + 0.02;
-    group.add(wick);
-    group.add(this.makeFlame(height + 0.09));
+    group.add(this.makeFlame(height + 0.04));
     group.rotation.set(0, 0, 0);
     return { group, width: width + 0.04 };
   }
