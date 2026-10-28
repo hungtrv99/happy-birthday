@@ -325,7 +325,6 @@ body.is-candlelit .stage {
 .letter.is-open {
   opacity: 1;
   pointer-events: auto;
-  cursor: pointer;
 }
 
 .letter[hidden] {
@@ -333,8 +332,13 @@ body.is-candlelit .stage {
 }
 
 .letter-card {
+  position: relative;
   width: min(92vw, 26rem);
-  padding: 2.4rem 2.1rem 1.6rem;
+  max-height: min(82vh, 40rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 6px;
   background:
@@ -346,14 +350,57 @@ body.is-candlelit .stage {
   text-align: left;
   transform: rotate(-1.1deg) translateY(12px);
   transition: transform 0.7s ease;
+  touch-action: pan-y;
 }
 
 .letter.is-open .letter-card {
   transform: rotate(-1.1deg);
 }
 
+.letter-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  color: #ee7a96;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 14px rgba(255, 120, 150, 0.18);
+}
+
+.letter-close:hover {
+  background: #fff;
+}
+
+.letter-close svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.letter-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  max-height: min(82vh, 40rem);
+  padding: 2.4rem 2.1rem 1.8rem;
+  -webkit-overflow-scrolling: touch;
+}
+
 .letter-hello {
   margin-bottom: 1.15rem;
+  padding-right: 2.2rem;
   font-family: "Great Vibes", cursive;
   font-size: clamp(2.1rem, 6vw, 2.8rem);
   color: #ee7a96;
@@ -377,17 +424,6 @@ body.is-candlelit .stage {
   font-size: clamp(1.05rem, 2.8vw, 1.25rem);
   letter-spacing: 0.22em;
   color: #e05670;
-}
-
-.letter-hint {
-  margin-top: 1.6rem;
-  font-family: "Cormorant Garamond", serif !important;
-  font-style: italic;
-  font-size: 0.88rem !important;
-  letter-spacing: 0.04em;
-  text-align: center;
-  color: #d36a7e;
-  opacity: 0.72;
 }
 
 .dock {

@@ -26,6 +26,8 @@ const hintEl = document.getElementById("hint");
 const guideEl = document.getElementById("guide");
 const wishBtn = document.getElementById("wish");
 const letterEl = document.getElementById("letter");
+const letterClose = document.getElementById("letterClose");
+const letterBody = letterEl.querySelector(".letter-body");
 const canvas = document.getElementById("scene");
 const audioEl = document.getElementById("song");
 const birthdayEl = document.getElementById("birthday");
@@ -36,7 +38,6 @@ scene.start();
 const song = new BirthdaySong(audioEl, birthdayEl);
 let started = false;
 let storyDone = false;
-let letterShown = false;
 let index = -1;
 let timer = 0;
 
@@ -89,12 +90,11 @@ function finishStory() {
 }
 
 function openLetter() {
-  if (letterShown) return;
-  letterShown = true;
   wishBtn.hidden = true;
   guideEl.classList.remove("is-shown");
   letterEl.hidden = false;
   document.body.classList.add("is-letter");
+  if (letterBody) letterBody.scrollTop = 0;
   requestAnimationFrame(() => letterEl.classList.add("is-open"));
 }
 
@@ -115,12 +115,11 @@ function onWish(e) {
   if (scene.candlesLit && !scene.blown) {
     scene.blowCandles();
     song.resumeBg();
-    if (!letterShown) {
-      wishBtn.hidden = true;
-      guideEl.classList.remove("is-shown");
-      document.body.classList.add("is-letter");
-      timer = window.setTimeout(openLetter, 1200);
-    }
+    wishBtn.hidden = true;
+    guideEl.classList.remove("is-shown");
+    document.body.classList.add("is-letter");
+    window.clearTimeout(timer);
+    timer = window.setTimeout(openLetter, 1200);
   } else {
     scene.lightCandles();
     song.playWish().catch(() => {});
@@ -143,7 +142,9 @@ window.addEventListener("keydown", (e) => {
 });
 wishBtn.addEventListener("click", onWish);
 wishBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
-letterEl.addEventListener("pointerdown", (e) => {
+letterEl.addEventListener("pointerdown", (e) => e.stopPropagation());
+letterClose.addEventListener("pointerdown", (e) => e.stopPropagation());
+letterClose.addEventListener("click", (e) => {
   e.stopPropagation();
   closeLetter();
 });
