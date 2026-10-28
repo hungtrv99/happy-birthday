@@ -7,13 +7,13 @@ document.getElementById("name").textContent = name;
 
 const slides = [
   { kicker: "Happy Birthday", text: "Linh Giang", className: "is-name" },
-  { kicker: "", text: "Chúc em tuổi 20 thật rực rỡ", className: "is-wish" },
-  { kicker: "", text: "Luôn vui vẻ", className: "is-wish" },
-  { kicker: "", text: "Bình an, hạnh phúc", className: "is-wish" },
-  { kicker: "", text: "Học hành thuận lợi", className: "is-wish" },
-  {
+  { kicker: "", text: "Chào cột mốc tuổi 20 đẹp nhất của thanh xuân", className: "is-wish" },
+  { kicker: "", text: "Mong mỗi ngày trôi qua đều thết đãi em những điều ngọt ngào", className: "is-wish" },
+  { kicker: "", text: "Luôn bình an, an nhiên và tỏa sáng theo cách của riêng em", className: "is-wish" },
+  { kicker: "", text: "Mọi nỗ lực trong học tập đều mang lại kết quả như ý", className: "is-wish" },
+{
     kicker: "",
-    text: "Luôn được yêu thương và giữ mãi nụ cười trên môi nhé",
+    text: "Mong rằng mọi chặng đường sắp tới của em luôn có may mắn và những người trân trọng em đồng hành",
     className: "is-wish is-long",
   },
 ];
